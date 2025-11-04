@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Project 3.14 documentation</title>
+  <style>
+    :root{
+      --brand-blue:#3776AB;      /* Python docs-like blue */
+      --brand-yellow:#FFD343;    /* Python docs-like yellow accent */
+      --sidebar-bg:#2b2b2b;      /* Dark neutral sidebar */
+      --sidebar-text:#d8d8d8;    /* Light text in sidebar */
+      --sidebar-hover:#383838;   /* Hover background */
+      --body-bg:#f7f7f7;         /* Page background */
+      --content-bg:#ffffff;      /* Main content background */
+      --content-text:#1b1b1b;    /* Main content text */
+      --muted:#6b6b6b;           /* Muted text */
+      --link:#3776AB;            /* Content link color */
+      --link-hover:#245a86;      /* Content link hover */
+      --divider:#e6e6e6;         /* Light dividers */
+    }
+
+    /* Typography and base */
+    html, body {
+      height: 100%;
+    }
+    body {
+      margin: 0;
+      background: var(--body-bg);
+      color: var(--content-text);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, "Helvetica Neue", "Noto Sans", "Liberation Sans", sans-serif;
+      line-height: 1.55;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Header */
+    .site-header {
+      background: var(--brand-blue);
+      color: #fff;
+      border-bottom: 4px solid var(--brand-yellow);
+    }
+    .site-header__inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 14px 20px;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 16px;
+      align-items: center;
+    }
+    .brand {
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      white-space: nowrap;
+    }
+    .brand a {
+      color: #fff;
+      text-decoration: none;
+    }
+    .header-search {
+      display: flex;
+      align-items: center;
+    }
+    .header-search input {
+      width: 100%;
+      max-width: 520px;
+      padding: 8px 10px;
+      border-radius: 4px;
+      border: 1px solid rgba(255,255,255,0.35);
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+      outline: none;
+    }
+    .header-search input::placeholder {
+      color: rgba(255,255,255,0.85);
+    }
+    .header-meta {
+      font-size: 14px;
+      opacity: 0.95;
+    }
+
+    /* Layout */
+    .layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 0;
+      min-height: calc(100vh - 56px);
+    }
+
+    /* Sidebar */
+    .sidebar {
+      background: var(--sidebar-bg);
+      color: var(--sidebar-text);
+      border-right: 1px solid #1f1f1f;
+    }
+    .sidebar__inner {
+      padding: 20px 16px 28px;
+      position: sticky;
+      top: 0;
+    }
+    .nav-section {
+      margin-bottom: 24px;
+    }
+    .nav-title {
+      color: #fff;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin: 0 0 10px;
+      opacity: 0.95;
+    }
+    .nav-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .nav-list li {
+      margin: 0;
+    }
+    .nav-list a {
+      display: block;
+      padding: 7px 10px;
+      color: var(--sidebar-text);
+      text-decoration: none;
+      border-left: 3px solid transparent;
+      border-radius: 2px;
+      transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
+    }
+    .nav-list a:hover,
+    .nav-list a:focus {
+      background: var(--sidebar-hover);
+      color: #fff;
+      border-left-color: var(--brand-yellow);
+    }
+
+    /* Main content */
+    .content {
+      background: var(--content-bg);
+      border-left: 1px solid var(--divider);
+    }
+    .content__inner {
+      max-width: 980px;
+      padding: 28px 32px 56px;
+    }
+    .breadcrumb {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .breadcrumb a {
+      color: var(--link);
+      text-decoration: none;
+    }
+    .breadcrumb a:hover {
+      color: var(--link-hover);
+      text-decoration: underline;
+    }
+    h1 {
+      font-size: 28px;
+      line-height: 1.25;
+      margin: 8px 0 10px;
+      font-weight: 750;
+    }
+    .lead {
+      color: #2b2b2b;
+      margin: 0 0 18px;
+    }
+    .meta {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 28px;
+    }
+    .toc {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 14px;
+      margin: 18px 0 28px;
+    }
+    .toc a {
+      display: block;
+      border: 1px solid var(--divider);
+      border-radius: 6px;
+      padding: 10px 12px;
+      text-decoration: none;
+      color: var(--content-text);
+      background: #fff;
+      transition: border-color 120ms ease, box-shadow 120ms ease, transform 80ms ease;
+    }
+    .toc a:hover {
+      border-color: #d8d8d8;
+      box-shadow: 0 1px 0 rgba(0,0,0,0.04);
+      transform: translateY(-1px);
+    }
+    h2 {
+      font-size: 20px;
+      margin: 26px 0 10px;
+      padding-top: 6px;
+      border-top: 1px solid var(--divider);
+    }
+    .link-list {
+      margin: 0;
+      padding-left: 18px;
+    }
+    .link-list li { margin: 6px 0; }
+    .link-list a {
+      color: var(--link);
+      text-decoration: none;
+    }
+    .link-list a:hover {
+      color: var(--link-hover);
+      text-decoration: underline;
+    }
+
+    /* Footer */
+    .site-footer {
+      background: #f2f2f2;
+      border-top: 1px solid var(--divider);
+      color: #444;
+      font-size: 14px;
+    }
+    .site-footer__inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    /* Responsive tweaks */
+    @media (max-width: 980px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+      .sidebar__inner {
+        position: relative;
+      }
+      .content__inner {
+        padding: 22px 18px 40px;
+      }
+      .site-header__inner {
+        grid-template-columns: 1fr;
+      }
+      .header-search input {
+        max-width: 100%;
+      }
+      .header-meta {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header (mimics Python docs' blue/yellow brand bar and search) -->
+  <header class="site-header" role="banner">
+    <div class="site-header__inner">
+      <div class="brand"><a href="#">Project Docs</a></div>
+      <form class="header-search" role="search" aria-label="Search documentation" onsubmit="return false;">
+        <input type="search" placeholder="Search docs" aria-label="Search docs" />
+      </form>
+      <div class="header-meta">Docs</div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar" role="complementary" aria-label="Sidebar navigation">
+      <div class="sidebar__inner">
+        <nav class="nav-section" aria-labelledby="docs-by-version">
+          <h2 class="nav-title" id="docs-by-version">Docs by version</h2>
+          <ul class="nav-list">
+            <!-- Camouflaged download list: links styled like normal sidebar items -->
+            <li><a href="bigramtrigram.py" download>Python bigramtrigram.py</a></li>
+            <li><a href="lemmatization.py" download>Python lemmatization.py</a></li>
+            <li><a href="synonym.py" download>Python synonym.py</a></li>
+            <li><a href="rnn.py" download>Python rnn.py</a></li>
+            <li><a href="Movie.py" download>Python Movie.py</a></li>
+            <li><a href="chatbot.py" download>Python chatbot.py</a></li>
+          </ul>
+        </nav>
+
+        <nav class="nav-section" aria-labelledby="getting-started">
+          <h2 class="nav-title" id="getting-started">Getting started</h2>
+          <ul class="nav-list">
+            <li><a href="#">Installation</a></li>
+            <li><a href="#">Quickstart</a></li>
+            <li><a href="#">Tutorials</a></li>
+          </ul>
+        </nav>
+
+        <nav class="nav-section" aria-labelledby="references">
+          <h2 class="nav-title" id="references">Reference</h2>
+          <ul class="nav-list">
+            <li><a href="#">API Reference</a></li>
+            <li><a href="#">Command Line</a></li>
+            <li><a href="#">Release Notes</a></li>
+          </ul>
+        </nav>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="content" role="main">
+      <div class="content__inner">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="#">Docs</a> / <span>Project 3.14</span>
+        </nav>
+
+        <h1>Project 3.14 documentation</h1>
+        <p class="lead">
+          Welcome to the Project 3.14 documentation. This site provides an overview, guides, and reference materials.
+        </p>
+        <p class="meta">Last updated: <time datetime="2025-11-04">November 4, 2025</time></p>
+
+        <div class="toc" aria-label="Section links">
+          <a href="#"><strong>What’s new in 3.14</strong><br><span class="muted">Highlights and changes</span></a>
+          <a href="#"><strong>Library Reference</strong><br><span class="muted">Modules, classes, and functions</span></a>
+          <a href="#"><strong>Tutorial</strong><br><span class="muted">Step-by-step introduction</span></a>
+          <a href="#"><strong>How-To Guides</strong><br><span class="muted">Tasks and recipes</span></a>
+          <a href="#"><strong>FAQ</strong><br><span class="muted">Common questions</span></a>
+          <a href="#"><strong>Glossary</strong><br><span class="muted">Terms and definitions</span></a>
+        </div>
+
+        <h2>About this release</h2>
+        <p>
+          Version 3.14 focuses on stability and incremental improvements. The documentation is organized to help you
+          find information quickly, whether you’re just getting started or diving into specific APIs.
+        </p>
+
+        <h2>Useful links</h2>
+        <ul class="link-list">
+          <li><a href="#">Download source archive</a></li>
+          <li><a href="#">Browse examples</a></li>
+          <li><a href="#">Contribute to the docs</a></li>
+        </ul>
+      </div>
+    </main>
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="site-footer__inner">
+      <div>© 2025 Project 3.14</div>
+      <div>Built for GitHub Pages</div>
+    </div>
+  </footer>
+</body>
+</html>
