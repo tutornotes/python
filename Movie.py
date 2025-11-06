@@ -13,24 +13,20 @@ import joblib
 import os
 import sys
 
-
 DATASET_PATH = 'Dataset/IMDB.csv'
 MODELS_DIR = 'Models/'
-
 
 os.makedirs(os.path.dirname(DATASET_PATH), exist_ok=True)
 os.makedirs(MODELS_DIR, exist_ok=True)
 
-
 print("Downloading NLTK resources (stopwords, punkt)...")
 try:
     nltk.download('stopwords', quiet=True)
-    nltk.download('punkt', quiet=True)
+    nltk.download('punkt_tab', quiet=True)
 except Exception as e:
     print(f"Error downloading NLTK data: {e}. Please check connection.")
     sys.exit(1)
 print("NLTK downloads complete.\n")
-
 
 
 def create_sample_csv(path):
@@ -53,7 +49,7 @@ def create_sample_csv(path):
             "It's a huge disappointment and a failure in every sense."
         ],
         'sentiment': [
-            'positive', 'negative', 'positive', 'negative', 'positive', 
+            'positive', 'negative', 'positive', 'negative', 'positive',
             'negative', 'positive', 'negative', 'positive', 'negative'
         ]
     }
@@ -61,13 +57,15 @@ def create_sample_csv(path):
     df_sample.to_csv(path, index=False)
     print(f"Sample data saved to {path}. For production use, replace this with the full dataset.\n")
 
+
 create_sample_csv(DATASET_PATH)
 
 
 def clean_html(text):
     """1. Remove HTML tags"""
     cleaned = re.compile(r'<.*?>')
-    return re.sub(cleaned,'',text)
+    return re.sub(cleaned, '', text)
+
 
 def is_special(text):
     """2. Remove special characters (keep alphanumeric)"""
@@ -79,9 +77,11 @@ def is_special(text):
             rem = rem + ' '
     return rem
 
+
 def to_lower(text):
     """3. Convert everything to lowercase"""
     return text.lower()
+
 
 def rem_stopwords(text):
     """4. Remove stopwords (returns list of words)"""
@@ -89,19 +89,17 @@ def rem_stopwords(text):
     words = word_tokenize(text)
     return [w for w in words if w not in stop_words]
 
+
 def stem_text(text):
     """5. Stemming (takes list of words, returns single string)"""
     ss = SnowballStemmer('english')
     return " ".join([ss.stem(w) for w in text])
 
 
-
-
 def run_sentiment_analysis():
     print("# Movie Review Sentiment Analysis System")
     print("-" * 50)
-    
-    
+
     try:
         dataset = pd.read_csv(DATASET_PATH)
     except FileNotFoundError:
@@ -111,12 +109,10 @@ def run_sentiment_analysis():
 
     print(f"Dataset shape : {dataset.shape}\n")
 
-    
     dataset.sentiment.replace('positive', 1, inplace=True)
     dataset.sentiment.replace('negative', 0, inplace=True)
     print(f"Sentiment encoded ('positive': 1, 'negative': 0)\n")
 
-    
     print("--- Starting Text Cleaning ---")
     dataset.review = dataset.review.apply(clean_html)
     dataset.review = dataset.review.apply(is_special)
@@ -125,44 +121,39 @@ def run_sentiment_analysis():
     dataset.review = dataset.review.apply(stem_text)
     print("--- Text Cleaning Complete ---\n")
 
-    
     initial_shape = dataset.shape[0]
     dataset = dataset[dataset.review.str.strip().astype(bool)]
     print(f"Filtered: {initial_shape - dataset.shape[0]} rows removed due to empty review after cleaning.")
-    
-    X = np.array(dataset.review.values) # Use the cleaned review column
+
+    X = np.array(dataset.review.values)
     y = np.array(dataset.sentiment.values)
-    
-    cv = CountVectorizer(max_features = 2000) 
+
+    cv = CountVectorizer(max_features=2000)
     X = cv.fit_transform(dataset.review).toarray()
-    
-  
+
     joblib.dump(cv, os.path.join(MODELS_DIR, "MRSA_CountVectorizer.pkl"))
     print(f"--- Bag of words: CountVectorizer saved to Models/MRSA_CountVectorizer.pkl ---\n")
     print(f"BOW X shape : {X.shape}, Y shape: {y.shape}\n")
 
-    
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=9)
     print(f"Train shapes X : {X_train.shape}, y : {y_train.shape}\n")
     print(f"Test shapes X : {X_test.shape}, y : {y_test.shape}\n")
-    
-   
+
     print("--- Training Naive Bayes Models ---")
     gnb = GaussianNB()
     mnb = MultinomialNB(alpha=1.0, fit_prior=True)
     bnb = BernoulliNB(alpha=1.0, fit_prior=True)
-    
+
     gnb.fit(X_train, y_train)
     mnb.fit(X_train, y_train)
-    bnb.fit(X_train, y_train) 
+    bnb.fit(X_train, y_train)
 
     joblib.dump(gnb, os.path.join(MODELS_DIR, "MRSA_gnb.pkl"))
     joblib.dump(mnb, os.path.join(MODELS_DIR, "MRSA_mnb.pkl"))
     joblib.dump(bnb, os.path.join(MODELS_DIR, "MRSA_bnb.pkl"))
-    
+
     print(f"Trained models saved successfully to the '{MODELS_DIR}' directory.\n")
-    
-    
+
     ypg = gnb.predict(X_test)
     ypm = mnb.predict(X_test)
     ypb = bnb.predict(X_test)
@@ -172,6 +163,33 @@ def run_sentiment_analysis():
     print(f"Multinomial accuracy = {round(accuracy_score(y_test, ypm), 4) * 100} %")
     print(f"Bernoulli accuracy = {round(accuracy_score(y_test, ypb), 4) * 100} %")
     print("-" * 50)
-    
+
+    # === Sentiment Prediction (added section) ===
+    print("\nNow you can test the model with your own review!\n")
+    user_review = input("Enter your movie review: ")
+
+    # Load model and vectorizer
+    cv_loaded = joblib.load(os.path.join(MODELS_DIR, "MRSA_CountVectorizer.pkl"))
+    model_loaded = joblib.load(os.path.join(MODELS_DIR, "MRSA_mnb.pkl"))  # Using MultinomialNB by default
+
+    # Clean and preprocess input
+    def preprocess(text):
+        text = clean_html(text)
+        text = is_special(text)
+        text = to_lower(text)
+        text = rem_stopwords(text)
+        text = stem_text(text)
+        return text
+
+    cleaned_input = preprocess(user_review)
+    vector_input = cv_loaded.transform([cleaned_input]).toarray()
+
+    prediction = model_loaded.predict(vector_input)[0]
+    sentiment = "Positive" if prediction == 1 else "Negative"
+
+    print("\nPerson says:", user_review)
+    print("System analysis → This review expresses a", sentiment, "sentiment about the movie.")
+
+
 if __name__ == "__main__":
     run_sentiment_analysis()
